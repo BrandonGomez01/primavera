@@ -17,7 +17,7 @@ input{margin-top:20px;background:#111;border:1px solid #333;color:white;padding:
 #escena.show{display:block}
 .jardin{position:absolute;inset:0;transition:opacity .8s}
 .pasto{position:absolute;bottom:0;left:0;right:0;height:90px;background:#0f2e0f;transition:opacity .8s}
-.flower{position:absolute;bottom:0;cursor:pointer;touch-action:manipulation;z-index:65}
+.flower{position:absolute;bottom:0;cursor:pointer;touch-action:manipulation;z-index:65;width:80px}
 .tallo{width:6px;background:#2e7d32;position:absolute;bottom:0;left:50%;transform:translateX(-50%);pointer-events:none}
 .flower-head{position:absolute;width:80px;height:80px;left:50%;transform:translateX(-50%);pointer-events:none}
 .petal{position:absolute;width:26px;height:40px;background:#ffeb3b;border-radius:50% 50% / 60% 60%;left:50%;top:50%;transform-origin:13px 26px;pointer-events:none}
@@ -31,13 +31,13 @@ input{margin-top:20px;background:#111;border:1px solid #333;color:white;padding:
 #contador.show{display:block}
 #contador.fuegos{border-color:white;color:white;background:rgba(255,235,59,.15)}
 .petalos-container{position:fixed;inset:0;pointer-events:none;z-index:60;overflow:hidden}
+.petalos-container div{will-change:transform}
 .petalo{position:absolute;top:-20px;width:12px;height:12px;background:#ffeb3b;border-radius:50% 0 50% 0;opacity:.85;animation:caer linear}
 .corazon{position:fixed;font-size:22px;pointer-events:none;animation:flotar 1.2s ease-out forwards;z-index:90}
 @keyframes caer{to{transform:translateY(110vh) rotate(720deg) translateX(100px)}}
 @keyframes flotar{0%{transform:translate(-50%,0) scale(1);opacity:1}100%{transform:translate(-50%,-130px) scale(1.8);opacity:0}}
 @keyframes crecer{from{transform:scaleY(0)}to{transform:scaleY(1)}}
 @keyframes bloom{from{transform:translateX(-50%) scale(0)}to{transform:translateX(-50%) scale(1)}}
-@keyframes corazonPetalo{0%{transform:scale(0);opacity:0}20%{opacity:1}80%{opacity:1}100%{transform:scale(1.2);opacity:0}}
 #fireworks{position:fixed;inset:0;z-index:55;pointer-events:none;display:none;opacity:0;transition:opacity .8s}
 #fireworks.show{display:block;opacity:1}
 #luna{position:fixed;top:70px;right:30px;width:68px;height:68px;background:#ffeb3b;border-radius:50%;box-shadow:0 0 40px #ffeb3b, 0 0 80px rgba(255,235,59,.6);z-index:56;display:none;opacity:0;transition:opacity 1s}
@@ -99,17 +99,15 @@ function paso2(){
  let n=document.getElementById('nombre').value.trim();
  if(n.length<2){document.getElementById('nombre').style.borderColor='red'; if(navigator.vibrate) navigator.vibrate([50,50,50]); return;}
  nombreFinal=n; if(navigator.vibrate) navigator.vibrate(100);
- // FIX 3 - sin lo de interactivo
  let largo=`<b style="color:white;font-size:20px">${n},</b><br><br>que tengas un lindo día de la primavera, que hoy todo lo lindo florezca para vos...<br><br>Te merecés cada flor amarilla de este jardín y mucho más.<br><br>💛`;
  document.getElementById('p1').style.display='none'; document.getElementById('p2').style.display='flex';
  typeWriter(document.getElementById('texto'), largo, 25, ()=>{document.getElementById('btnJardin').style.display='inline-block';});
 }
 
-// FIX 1 - ahora el click está en el contenedor entero y funciona en celular
 function explotarFlor(e){
  e.preventDefault(); e.stopPropagation();
  let rect=e.currentTarget.getBoundingClientRect();
- let x=rect.left+rect.width/2, y=rect.top;
+ let x=rect.left+rect.width/2, y=rect.top+rect.height/2;
  if(navigator.vibrate) navigator.vibrate(30);
  for(let i=0;i<10;i++){
    let c=document.createElement('div'); c.className='corazon'; c.innerText='💛';
@@ -123,8 +121,7 @@ function explotarFlor(e){
 }
 
 function crearFlor(x, altura, delay){
- const c=document.createElement('div'); c.className='flower'; c.style.left=x+'%'; c.style.bottom='0'; c.style.height=altura+'px'; c.style.width='80px'; c.style.animation=`crecer .7s ${delay}s both`; c.style.transformOrigin='bottom';
- // Usamos pointerdown que funciona en notebook Y celular
+ const c=document.createElement('div'); c.className='flower'; c.style.left=x+'%'; c.style.bottom='0'; c.style.height=altura+'px'; c.style.animation=`crecer .7s ${delay}s both`; c.style.transformOrigin='bottom';
  c.addEventListener('pointerdown', explotarFlor);
  const tallo=document.createElement('div'); tallo.className='tallo'; tallo.style.height=altura+'px';
  let l1=document.createElement('div'); l1.className='leaf left'; l1.style.bottom=(altura*0.35)+'px'; tallo.appendChild(l1);
@@ -148,9 +145,9 @@ function paso3(){
  let msg=document.getElementById('mensajeFinal'); msg.style.display='block';
  let texto2=`${nombreFinal}, este es tu jardín infinito.<br><br>Gracias por existir 🌻`;
  typeWriter(document.getElementById('texto2'), texto2, 28);
- for(let i=0;i<30;i++) crearFlor(2+Math.random()*96, 110+Math.random()*220, Math.random()*1.2);
+ for(let i=0;i<28;i++) crearFlor(2+Math.random()*96, 110+Math.random()*220, Math.random()*1.2);
  setInterval(()=>{ if(modo==='flores') crearFlor(Math.random()*100, 110+Math.random()*220, 0)}, 300);
- setInterval(crearPetalo, 180);
+ setInterval(crearPetalo, 200);
  setTimeout(()=>msg.classList.add('mini'), 4000);
  iniciarAlternancia();
  setTimeout(()=>formarCorazon(), 15000);
@@ -164,6 +161,7 @@ function resize(){canvas.width=innerWidth; canvas.height=innerHeight} window.add
 let particles=[], fireInterval=null;
 function firework(x,y){ if(navigator.vibrate) navigator.vibrate([30,30,80]); for(let i=0;i<90;i++){ particles.push({x,y, vx:(Math.random()-0.5)*11, vy:(Math.random()-0.5)*11, life:100, color:`hsl(${42+Math.random()*16},100%,55%)`}) } }
 function loop(){ ctx.fillStyle='rgba(0,0,0,0.25)'; ctx.fillRect(0,0,canvas.width,canvas.height); particles.forEach((p,i)=>{ p.x+=p.vx; p.y+=p.vy; p.vy+=0.07; p.life--; ctx.fillStyle=p.color; ctx.beginPath(); ctx.arc(p.x,p.y,2.2,0,Math.PI*2); ctx.fill(); if(p.life<=0) particles.splice(i,1); }); requestAnimationFrame(loop); } loop();
+
 function mostrarFlores(){
  modo='flores';
  document.getElementById('fireworks').classList.remove('show'); setTimeout(()=>document.getElementById('fireworks').style.display='none',800);
@@ -186,27 +184,37 @@ function mostrarFuegos(){
 }
 function iniciarAlternancia(){ mostrarFlores(); setInterval(()=>{ if(modo==='flores') mostrarFuegos(); else mostrarFlores(); }, 10000); }
 
-// FIX 2 - corazón responsive para celular
+let formandoCorazon = false;
 function formarCorazon(){
- if(navigator.vibrate) navigator.vibrate([50,50,100]);
+ if(formandoCorazon) return;
+ formandoCorazon = true;
+ if(navigator.vibrate) navigator.vibrate([40,40,80]);
  let isMobile = window.innerWidth < 600;
- let scale = isMobile ? 8 : 14; // más chico en celu
- let cx=window.innerWidth/2, cy=isMobile ? window.innerHeight/2.5 : window.innerHeight/2.2;
- for(let t=0; t<Math.PI*2; t+=0.20){
-   let x=16*Math.pow(Math.sin(t),3);
-   let y=-(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t));
-   let px=cx + x*scale; let py=cy + y*scale;
-   let p=document.createElement('div'); p.className='petalo';
-   p.style.left=px+'px'; p.style.top=py+'px'; p.style.animation='corazonPetalo 3s forwards';
-   p.style.background='#ffeb3b'; p.style.position='fixed';
-   document.getElementById('petalos').appendChild(p);
-   setTimeout(()=>p.remove(),3000);
+ let cont = document.getElementById('petalos');
+ let heartWrap = document.createElement('div');
+ heartWrap.style.cssText = `position:fixed;left:50%;top:${isMobile?'40%':'45%'};transform:translate(-50%,-50%);width:${isMobile?'220px':'280px'};height:${isMobile?'200px':'260px'};pointer-events:none;z-index:70`;
+ cont.appendChild(heartWrap);
+ let puntos = isMobile?22:28;
+ for(let i=0; i<puntos; i++){
+   let t = (Math.PI*2 * i / puntos);
+   let x = 16*Math.pow(Math.sin(t),3);
+   let y = -(13*Math.cos(t)-5*Math.cos(2*t)-2*Math.cos(3*t)-Math.cos(4*t));
+   let p = document.createElement('div');
+   p.style.cssText = `position:absolute;left:50%;top:45%;width:10px;height:10px;background:#ffeb3b;border-radius:50% 0 50% 0;transform:translate(-50%,-50%) translate(${x*(isMobile?5.5:8)}px, ${y*(isMobile?5.5:8)}px) scale(0);transition:transform .6s ${i*0.03}s cubic-bezier(0.34,1.56,0.64,1);opacity:0.95`;
+   heartWrap.appendChild(p);
+   setTimeout(()=>{ p.style.transform = `translate(-50%,-50%) translate(${x*(isMobile?5.5:8)}px, ${y*(isMobile?5.5:8)}px) scale(1)`; }, 50);
  }
+ let txt = document.createElement('div');
+ txt.style.cssText = `position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(0);color:#ffeb3b;font-weight:900;font-size:${isMobile?'16px':'20px'};white-space:nowrap;text-shadow:0 0 10px rgba(255,235,59,.8);transition:transform .5s .8s;`;
+ txt.innerText = `${nombreFinal} 💛`;
+ heartWrap.appendChild(txt);
+ setTimeout(()=>{ txt.style.transform = 'translate(-50%,-50%) scale(1)'; }, 100);
  setTimeout(()=>{
-   let txt=document.createElement('div');
-   txt.style.cssText=`position:fixed;left:50%;top:${isMobile?'38%':'43%'};transform:translate(-50%,-50%);color:#ffeb3b;font-weight:900;font-size:${isMobile?'18px':'22px'};z-index:70;animation:corazonPetalo 2.5s forwards;text-shadow:0 0 20px #ffeb3b;white-space:nowrap`;
-   txt.innerText=`${nombreFinal} 💛`; document.body.appendChild(txt); setTimeout(()=>txt.remove(),2500);
- }, 500);
+   heartWrap.style.transition = 'opacity .6s, transform .6s';
+   heartWrap.style.opacity = '0';
+   heartWrap.style.transform = 'translate(-50%,-50%) scale(1.4)';
+   setTimeout(()=>{ heartWrap.remove(); formandoCorazon = false; }, 600);
+ }, 3500);
 }
 </script>
 </body>
