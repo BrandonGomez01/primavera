@@ -15,9 +15,9 @@ input{margin-top:20px;background:#111;border:1px solid #333;color:white;padding:
 .btn2{margin-top:20px;background:#ffeb3b;color:#000;border:none;padding:14px 28px;border-radius:40px;font-weight:700;cursor:pointer}
 #escena{position:fixed;inset:0;background:#000;display:none;z-index:50}
 #escena.show{display:block}
-.jardin{position:absolute;inset:0;transition:opacity .8s}
+.jardin{position:absolute;inset:0;transition:opacity .8s;overflow:hidden}
 .pasto{position:absolute;bottom:0;left:0;right:0;height:90px;background:#0f2e0f;transition:opacity .8s}
-.flower{position:absolute;bottom:0;cursor:pointer;touch-action:manipulation;z-index:65;width:80px}
+.flower{position:absolute;bottom:0;cursor:pointer;touch-action:manipulation;z-index:65;width:80px;margin-left:-40px}
 .tallo{width:6px;background:#2e7d32;position:absolute;bottom:0;left:50%;transform:translateX(-50%);pointer-events:none}
 .flower-head{position:absolute;width:80px;height:80px;left:50%;transform:translateX(-50%);pointer-events:none}
 .petal{position:absolute;width:26px;height:40px;background:#ffeb3b;border-radius:50% 50% / 60% 60%;left:50%;top:50%;transform-origin:13px 26px;pointer-events:none}
@@ -117,7 +117,7 @@ function explotarFlor(e){
  }
  let flor=e.currentTarget;
  flor.style.transition='transform .2s'; flor.style.transform='scale(0)';
- setTimeout(()=>{ flor.remove(); crearFlor(Math.random()*100, 110+Math.random()*220, 0); },250);
+ setTimeout(()=>{ flor.remove(); crearFlor(Math.random()*80+5, 110+Math.random()*220, 0); },250);
 }
 
 function crearFlor(x, altura, delay){
@@ -134,7 +134,7 @@ function crearFlor(x, altura, delay){
  if(jardin.children.length>70) jardin.firstChild.remove();
 }
 
-function crearPetalo(){ const p=document.createElement('div'); p.className='petalo'; p.style.left=Math.random()*100+'vw'; p.style.animationDuration=(3+Math.random()*4)+'s'; document.getElementById('petalos').appendChild(p); setTimeout(()=>p.remove(),7000); }
+function crearPetalo(){ const p=document.createElement('div'); p.className='petalo'; p.style.left=Math.random()*90+'vw'; p.style.animationDuration=(3+Math.random()*4)+'s'; document.getElementById('petalos').appendChild(p); setTimeout(()=>p.remove(),7000); }
 
 function paso3(){
  document.getElementById('p2').style.display='none';
@@ -145,8 +145,8 @@ function paso3(){
  let msg=document.getElementById('mensajeFinal'); msg.style.display='block';
  let texto2=`${nombreFinal}, este es tu jardín infinito.<br><br>Gracias por existir 🌻`;
  typeWriter(document.getElementById('texto2'), texto2, 28);
- for(let i=0;i<28;i++) crearFlor(2+Math.random()*96, 110+Math.random()*220, Math.random()*1.2);
- setInterval(()=>{ if(modo==='flores') crearFlor(Math.random()*100, 110+Math.random()*220, 0)}, 300);
+ for(let i=0;i<28;i++) crearFlor(Math.random()*80+5, 110+Math.random()*220, Math.random()*1.2);
+ setInterval(()=>{ if(modo==='flores') crearFlor(Math.random()*80+5, 110+Math.random()*220, 0)}, 300);
  setInterval(crearPetalo, 200);
  setTimeout(()=>msg.classList.add('mini'), 4000);
  iniciarAlternancia();
